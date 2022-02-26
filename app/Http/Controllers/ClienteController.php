@@ -8,26 +8,6 @@ use Illuminate\Http\Request;
 
 class ClienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $clientes = Cliente::paginate(15);
-        return ClienteResource::collection($clientes);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -37,7 +17,15 @@ class ClienteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $cliente = new Cliente;
+        $cliente->nome = $request->input('nome');
+        $cliente->telefone = $request->input('telefone');
+        $cliente->cpf = $request->input('cpf');
+        $cliente->placa_carro = $request->input('placa_carro');
+
+        if($cliente->save()) {
+            return new ClienteResource( $cliente );
+        }
     }
 
     /**
@@ -46,20 +34,22 @@ class ClienteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function showOne($id)
     {
-        //
+        $cliente = Cliente::findOrFail( $id );
+        return new ClienteResource( $cliente );
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function showPlate($numero)
     {
-        //
+        $clientes_placa = Cliente::where('placa_carro', 'like', '%'.$numero)->get();
+        return ( $clientes_placa );
     }
 
     /**
@@ -71,7 +61,15 @@ class ClienteController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $cliente = Cliente::findOrFail( $request->id );
+        $cliente->nome = $request->input('nome');
+        $cliente->telefone = $request->input('telefone');
+        $cliente->cpf = $request->input('cpf');
+        $cliente->placa_carro = $request->input('placa_carro');
+
+        if($cliente->save()) {
+            return new ClienteResource( $cliente );
+        }
     }
 
     /**
@@ -82,6 +80,9 @@ class ClienteController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $cliente = Cliente::findOrFail( $id );
+        if($cliente->delete()) {
+            return new ClienteResource( $cliente );
+        }
     }
 }

@@ -19,5 +19,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// List artigos
-Route::get('clientes', [ClienteController::class, 'index']);
+// Cadastrar novo cliente
+Route::post('cliente', [ClienteController::class, 'store']);
+
+// Editar cadastro de um cliente
+Route::put('cliente/{id}', [ClienteController::class, 'update']);
+
+// Excluir cadastro de cliente
+Route::delete('cliente/{id}', [ClienteController::class,'destroy']);
+
+// Consultar cadastro de um cliente
+Route::get('cliente/{id}', [ClienteController::class, 'showOne']);
+
+// Consultar cliente pelo último número da placa
+Route::get('consulta/final-placa/{numero}', [ClienteController::class, 'showPlate']);
