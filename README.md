@@ -24,7 +24,7 @@ Instalar comandos:
 ## Endpoints
 
 |   Método   |  Endpoint  |    Descrição    |
-| :---         |     :---:      |          ---: |
+| :---         |     :---:      |          :--- |
 | POST   | /cliente     | Cadastro de novo cliente.    |
 | PUT     | /cliente/{id}       | Edição de um cliente já existente.      |
 | DELETE     | /cliente/{id}       | Remoção de um cliente existente.      |
