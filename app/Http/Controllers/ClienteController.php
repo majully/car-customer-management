@@ -23,8 +23,14 @@ class ClienteController extends Controller
         $cliente->cpf = $request->input('cpf');
         $cliente->placa_carro = $request->input('placa_carro');
 
-        if($cliente->save()) {
-            return new ClienteResource( $cliente );
+        if (Cliente::where('cpf', $cliente->cpf)->count() <= 0) {
+            if($cliente->save()) {
+                return new ClienteResource( $cliente );
+            }
+        } else {
+            return response()->json([
+                "message" => "Cliente informado já possui cadastro!"
+            ], 412);
         }
     }
 
@@ -36,8 +42,14 @@ class ClienteController extends Controller
      */
     public function showOne($id)
     {
-        $cliente = Cliente::findOrFail( $id );
-        return new ClienteResource( $cliente );
+        if (Cliente::where('id', $id)->exists()) {
+            $cliente = Cliente::findOrFail( $id );
+            return new ClienteResource( $cliente );
+        } else {
+            return response()->json([
+                "message" => "Cliente não encontrado!"
+            ], 404);
+        }
     }
 
     /**
@@ -48,8 +60,14 @@ class ClienteController extends Controller
      */
     public function showPlate($numero)
     {
-        $clientes_placa = Cliente::where('placa_carro', 'like', '%'.$numero)->get();
-        return ( $clientes_placa );
+        if (Cliente::where('placa_carro', 'like', '%'.$numero)->exists()) {
+            $clientes_placa = Cliente::where('placa_carro', 'like', '%'.$numero)->get();
+            return ( $clientes_placa );
+        } else {
+            return response()->json([
+                "message" => "Clientes com o final da placa informado não foi localizados!"
+            ], 404);
+        }
     }
 
     /**
@@ -61,14 +79,22 @@ class ClienteController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $cliente = Cliente::findOrFail( $request->id );
-        $cliente->nome = $request->input('nome');
-        $cliente->telefone = $request->input('telefone');
-        $cliente->cpf = $request->input('cpf');
-        $cliente->placa_carro = $request->input('placa_carro');
+        if (Cliente::where('id', $id)->exists()) {
+            $cliente = Cliente::findOrFail( $request->id );
+            $cliente->nome = $request->input('nome');
+            $cliente->telefone = $request->input('telefone');
+            $cliente->cpf = $request->input('cpf');
+            $cliente->placa_carro = $request->input('placa_carro');
 
-        if($cliente->save()) {
-            return new ClienteResource( $cliente );
+            if($cliente->save()) {
+                return response()->json([
+                    "message" => "Cadastro do cliente atualizado com sucesso!"
+                ], 200);
+            }
+        } else {
+            return response()->json([
+                "message" => "Cliente não encontrado!"
+            ], 404);
         }
     }
 
@@ -80,9 +106,17 @@ class ClienteController extends Controller
      */
     public function destroy($id)
     {
-        $cliente = Cliente::findOrFail( $id );
-        if($cliente->delete()) {
-            return new ClienteResource( $cliente );
+        if (Cliente::where('id', $id)->exists()) {
+            $cliente = Cliente::findOrFail( $id );
+            if($cliente->delete()) {
+                return response()->json([
+                    "message" => "Cliente deletado com sucesso!"
+                ], 202);
+            }
+        } else {
+            return response()->json([
+                "message" => "Cliente não encontrado!"
+            ], 404);
         }
     }
 }
